@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js"></script>
+	<style>
+		body {
+			font-family: Avenir;
+			margin: 0;
+			padding: 0;
+			background-color: #221C24;
+			color: white;
+		}
+		
+		#bubble {
+			border-radius: 25px;
+			background-color: #FFC93F;
+			width: 50px;
+			height: 50px;
+			position: absolute;
+			right: 5%;
+			top: 0;
+			transition: height .5s ease-in-out;
+		}
+		
+		#bubble[expanded] {
+			height: 97vh;
+		}
+		
+		.node {
+			border-radius: 2vw;
+			background-color: #B430FF;
+			width: 4vw;
+			height: 4vw;
+			position: absolute;
+			left: -2vw;
+			top: -2vw;
+		}
+		
+		.centered {
+			width: 640px;
+			position: relative;
+			top: 47.5vh;
+			margin-left: auto;
+			margin-right: auto;
+			transition: top .5s ease-in-out;
+		}
+		
+		.centered[top] {
+			top:1vh;
+		}
+		
+		#search-text {
+			font-family: Avenir;
+			background-color: #221C24;
+			color: white;
+			height: 5vw;
+			font-size: 3vw;
+			width: 80%;
+			display: inline-block;
+			border: solid #ccc 1px;
+		}
+		
+		#search-text:focus {
+			outline: none;
+		}
+		
+		.response {
+			border: solid #ccc 1px;
+			margin-top: 5px;
+			width: 40vw;
+			display: inline-block;
+		}
+		
+		.response h1 {
+			font-size: 1.5em;
+			margin: .2em;
+		}
+		
+		.response p {
+			margin: .2em;
+		}
+		
+		canvas {
+			background-color: rgba(0,0,0,0);
+			position: absolute;
+			left: 0;
+			top: 0;
+			pointer-events: none;
+			opacity: 0;
+			transition: opacity .5s ease;
+		}
+	</style>
+	<script>
+var exampleData = {
+	"Adam": {
+		"response": {
+			"title": "Aardvarks",
+			"description": "The aardvark is a medium-sized, burrowing, nocturnal mammal native to Africa.",
+		}
+	},
+	"Beth": {
+		"Chris": {
+			"response": {
+				"title": "Aardvarks",
+				"description": "The aardvark is a medium-sized, burrowing, nocturnal mammal native to Africa.",
+			}
+		},
+		"David": {
+			"response": {
+				"title": "Aardvarks",
+				"description": "The aardvark is a medium-sized, burrowing, nocturnal mammal native to Africa.",
+			},
+			"Elizabeth": {
+				"response": {
+					"title": "Aardvarks",
+					"description": "The aardvark is a medium-sized, burrowing, nocturnal mammal native to Africa.",
+				}
+			}
+		}
+	}
+};
+		
+Zepto(function($) {
+	$c = $('#c');
+	$c.attr('height', innerHeight);
+
+	var ctx = $c[0].getContext("2d");
+	
+	function insertAtRoot(data, root, right) {
+		var outlets = [];
+		for (var i in data) {
+			if (i == "response") {
+				var r = responseBox(data[i].title, data[i].description)
+				root.append(r);
+				var b = r.offset();
+				var pb = r.offsetParent().offset();
+				var pt = {
+					x: b.left + b.width - pb.left, 
+					y: b.top + b.height / 2 - pb.top,
+					box: true};
+				outlets.push(pt);	
+			} else {
+				outlets.push(insertNode(data[i], root));
+			}
+		}	
+		
+		ctx.strokeStyle = "#ccc";
+		ctx.lineWidth = 1;
+		for (var i in outlets) {
+			ctx.beginPath();
+			ctx.moveTo(outlets[i].x, outlets[i].y);
+			ctx.lineTo(right, outlets[i].y);
+			ctx.stroke();
+			
+			if(!outlets[i].box) {	
+				console.log(outlets[i].x +","+ outlets[i].y)
+				var n = document.createElement("div");
+				n.classList.add("node");
+				n.style.transform = "translate(" + outlets[i].x + "px," + outlets[i].y + "px)";
+				root.append(n);
+			}
+		}
+		
+	}
+	
+	function insertNode(data, root) {	
+		var outlets = [];
+		for (var i in data) {
+			if (i == "response") {
+				var r = responseBox(data[i].title, data[i].description)
+				root.append(r);
+				var b = r.offset();
+				var pb = r.offsetParent().offset();
+				var pt = {
+					x: b.left + b.width - pb.left, 
+					y: b.top + b.height / 2 - pb.top,
+					box: true};
+				outlets.push(pt);	
+			} else {
+				outlets.push(insertNode(data[i], root));
+			}
+		}	
+		
+		var inlet = {x:0 , y:0};
+		for (var i in outlets) {
+			if (outlets[i].x > inlet.x) inlet.x = outlets[i].x;
+			inlet.y += outlets[i].y;
+		}
+		inlet.y /= outlets.length;
+		inlet.x += 60;
+		ctx.strokeStyle = "#ccc";
+		ctx.lineWidth = 1;
+		for (var i in outlets) {
+			ctx.beginPath();
+			ctx.moveTo(inlet.x, inlet.y);
+			ctx.lineTo(outlets[i].x, outlets[i].y);
+			ctx.stroke();
+			if(!outlets[i].box) {	
+				console.log(outlets[i].x +","+ outlets[i].y)
+				var n = document.createElement("div");
+				n.classList.add("node");
+				n.style.transform = "translate(" + outlets[i].x + "px," + outlets[i].y + "px)";
+				root.append(n);
+			}
+		}
+	
+		return inlet;
+	}
+	
+	var $bubble = $('#bubble');
+	var $centered = $('.centered');
+	$bubble.click(function(e) {
+		$centered.attr('top', 'true');
+		$bubble.attr('expanded', 'true');
+		
+		setTimeout(function() {
+			var b = $bubble.offset();
+			var pb = $bubble.offsetParent().offset();
+			insertAtRoot(exampleData, $centered, b.left - pb.left);
+		
+			setTimeout(function() {
+				$('#c').css("opacity", 1.0);
+			}, 500);
+		}, 500);
+	});
+
+	function responseBox(title, content, image /* ignored for now */) {
+		var $result = $('<div class="response"></div');
+		$result.append('<h1>' + title + '</h2>');
+		$result.append('<p>' + content + '</p>');
+		return $result;	
+	}
+});
+	</script>
+</head>
+<body>
+	<div class="centered">
+		<canvas id="c" width="640"></canvas>
+		<input id="search-text" type="text"></input>
+		<div id="bubble"></div>
+	</div>
+</body>
+
+</html>
