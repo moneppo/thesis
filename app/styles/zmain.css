@@ -11,12 +11,48 @@ body[meshed] {
 }
 
 .center {
-	fill: #FFC93F;
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+	background-color: #FFC93F;
+	background-image: url(images/connection.svg);
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	position: absolute;
+	left: -35px;
+	top: -35px;
+	transform-origin: 50% 50%;
+	transform: translate(93vw, 47.5px);
+}
+
+body[meshed] .center {
+	background-image: none;
+	transition: all 1s ease-in-out;
+	transform: translate(50vw, 50vh);
+}
+
+.content {
+	margin-top: 80px;
 }
 
 .link {
   stroke: #999;
   stroke-opacity: .6;
+}
+
+#connectedPosts {
+	transition: opacity 1s ease-in-out;
+	background-color: transparent;
+}
+
+body[meshed] #connectedPosts {
+	opacity: 0;
+}
+
+svg {
+	position:absolute;
+	left: 0;
+	top: 0;
 }
 
 .node text {

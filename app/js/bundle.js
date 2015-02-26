@@ -7,11 +7,6 @@ d3.selection.prototype.moveToFront = function() {
   });
 };
 
-
-/*d3.xml("data/fcc.xml", function(error, data) {
-
-});*/
-
 var graph = {
 	nodes:	[
 		{name: "", fixed: true, x: innerWidth/2, y: innerHeight/2}
@@ -25,7 +20,9 @@ var force = d3.layout.force()
 		.gravity(0)
     .size([innerWidth, innerHeight]);
 
-var svg = d3.select("body").append("svg")
+var body = d3.select("body");
+
+var svg = d3.select("svg")
     .attr("width", innerWidth)
     .attr("height", innerHeight);
 
@@ -115,26 +112,29 @@ function simulateConnections() {
 	connectHelper();
 }
 
-var center = svg.append("circle")
-				.attr("class", "center")
-				.attr("r", 25)
-				.attr("cx", innerWidth - 100)
-				.attr("cy", 100)
-				.moveToFront();
+d3.xml("data/fcc.xml", function(error, data) {
+	
+});
 
+var center = d3.select(".center");
+
+d3.selectAll(".item[href^='#']")
+	.on("click", function(e) {
+		d3.select("#myModalExample").classed("active", true);
+	});
+
+d3.selectAll(".icon-close[href^='#']")
+	.on("click", function(e) {
+		d3.select("#myModalExample").classed("active", false);
+	});
 
 center.on("click", function	() {
-	console.log("foo");
 	center.on("click", undefined);
-	center.transition()
-		.duration(1000)
-		.attr("cx", innerWidth / 2.0)
-		.attr("cy", innerHeight / 2.0)
-		.each('end', function() {
+	body.attr("meshed", true);
+		setTimeout(function () {
 			update();
 			simulateConnections();
-		});
-	d3.select(document.body).attr("meshed", true);
+		}, 1000);
 });
 },{"d3":"/Users/moneppo/thesis/pollen01/node_modules/d3/d3.js"}],"/Users/moneppo/thesis/pollen01/node_modules/d3/d3.js":[function(require,module,exports){
 !function() {
