@@ -1,4 +1,5 @@
 body {
+	background-color: #eee;
 	transition: background-color 1s ease-in-out;
 }
 
@@ -8,6 +9,28 @@ body[meshed] {
 
 .node circle {
 	fill: #B430FF;
+}
+
+@-webkit-keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+	100% {
+		transform: rotate(260deg);
+	}
+}
+
+.spinner {
+	-webkit-animation: spin 1s 0s linear infinite;
 }
 
 .center {
@@ -58,6 +81,12 @@ svg {
 .node text {
   font: 10px "Avenir Next";
 	fill: white;
+	font-weight: 400;
   pointer-events: none;
   text-anchor: middle;
+}
+
+.mesh-blog-link {
+	font-weight: inherit;
+	fill: grey;
 }

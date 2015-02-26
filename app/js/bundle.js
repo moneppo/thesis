@@ -45,7 +45,35 @@ function update() {
 	var allNodes = svg.selectAll(".node").data(graph.nodes);
 	
 	function click(d) {
-		console.log("Click!");
+		var self = d3.select(this);
+		var spinner = self.append("image")
+			.attr("xlink:href", "images/spinner2.svg")
+			.classed("spinner", true)
+			.attr("height", 35)
+			.attr("width", 35)
+			.attr("x", -17.5)
+			.attr("y", -17.5);
+		setTimeout(function() {
+			spinner.remove();
+			var t1 = self.append("text")
+				.attr("class", "mesh-blog-link")
+				.text("My Little Pony News")
+				.attr("y", 50);
+			var t2 = self.append("text")
+				.attr("class", "mesh-blog-link")
+				.text("Star Trek Wiki Updates Feed")
+				.attr("y", 75);
+			var t3 = self.append("text")
+				.attr("class", "mesh-blog-link")
+				.text("TMZ Latest Updates")
+				.attr("y", 100);
+			self.on("click", function() {
+				t1.remove();
+				t2.remove();
+				t3.remove();
+				self.on("click", click);
+			})
+		}, 2000);
 	}
 	
 	var node = allNodes
@@ -134,6 +162,7 @@ center.on("click", function	() {
 		setTimeout(function () {
 			update();
 			simulateConnections();
+			d3.select("#connectedPosts").style("display", "none");
 		}, 1000);
 });
 },{"d3":"/Users/moneppo/thesis/pollen01/node_modules/d3/d3.js"}],"/Users/moneppo/thesis/pollen01/node_modules/d3/d3.js":[function(require,module,exports){
