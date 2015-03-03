@@ -1,32 +1,14 @@
-body {
+#home {
 	background-color: #eee;
 	transition: background-color 1s ease-in-out;
 }
 
-body[meshed] {
+#home[meshed] {
 	background-color: #221C24;
 }
 
 .node circle {
 	fill: #B430FF;
-}
-
-@-webkit-keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(90deg);
-  }
-  50% {
-    transform: rotate(180deg);
-  }
-  75% {
-    transform: rotate(270deg);
-  }
-	100% {
-		transform: rotate(260deg);
-	}
 }
 
 .spinner {
@@ -48,12 +30,12 @@ body[meshed] {
 	transform: translate(93vw, 47.5px);
 }
 
-body[meshed] .center {
+#home[meshed] .center {
 	background-image: none;
 	transition: all 1s ease-in-out;
 	transform: translate(50vw, 50vh);
 }
-
+ 
 .content {
 	margin-top: 80px;
 }
@@ -68,7 +50,7 @@ body[meshed] .center {
 	background-color: transparent;
 }
 
-body[meshed] #connectedPosts {
+#home[meshed] #connectedPosts {
 	opacity: 0;
 }
 

@@ -40,7 +40,7 @@ function update() {
       .attr("class", "link")
 			.style("stroke-width", 1);
 	
-	allLinks.exit().remove();
+	allLinks.	exit().remove();
 	
 	var allNodes = svg.selectAll(".node").data(graph.nodes);
 	
@@ -99,7 +99,9 @@ function update() {
         .attr("y2", function(d) { return d.target.y; });
 
     svg.selectAll(".node")
-				.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+				.attr("transform", function(d) { 
+					return "translate(" + d.x + "," + d.y + ")"; 
+				})
 				.moveToFront();
 		
 		center.moveToFront();
@@ -125,7 +127,8 @@ function simulateConnections() {
 		["David", [2]],
 		["Erin", [1]],
 		["Frank", [0]],
-		["Greg", [6]]
+		["Greg", [6]],
+		["Heather", [4]]
 	]
 	
 	var index = 0;
