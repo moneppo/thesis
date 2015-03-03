@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+		<style>
+			body {
+				position: relative;
+				margin: 0 0;
+				background-color: slategrey;
+			}
+			
+			.slide {
+				transform-origin: 50% 50%;
+				transform: translate(50%, 10%);
+				width: 50%;
+				color: oldlace;
+				font-family: "Avenir Next";
+				display: block;
+				position: absolute;
+				transition: opacity .7s ease-in-out;
+			}
+			
+			img {
+				width: 100%;
+			}
+			
+			.slide[hidden] {
+				opacity: 0.0;
+			}
+		</style>
+		<script>
+			$(document).ready(function() {
+				var start = 0;
+				$(document).click(function() {
+					$(".slide").eq(start).attr("hidden", true);
+					start++;
+					$(".slide").eq(start).attr("hidden", false);
+				});
+			})
+		</script>
+	</head>
+	<body>
+		<div class="slide">
+			<h1>A squirrel dying in front of your house may be more relevant to your 
+				interests right now than people dying in Africa.<h1>
+			<h2>Mark Zuckerberg</h2>
+		</div>
+		<div class="slide" hidden>
+			<img src="nodes.png"></img>
+			<h1>Mesh Networks</h1>
+		</div>
+		<div class="slide" hidden>
+			<a href="app/"><h1>Demo</h1></a></div>
+	</body>
+</html>
