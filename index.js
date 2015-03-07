@@ -1,140 +1,35 @@
-var d3 = require('d3');
+var graph = require("wax-graph");
+var $ = require("jquery");
+var rss = require("wax-rss");
 
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function(){
-    this.parentNode.appendChild(this);
-  });
-};
-
-var graph = {
-	nodes:	[
-		{name: "", fixed: true, x: innerWidth/2, y: innerHeight/2}
-	],
-	links: []};
-
-var force = d3.layout.force()
-    .charge(-1000)
-    .linkDistance(150)
-		.alpha(.01)
-		.gravity(0)
-    .size([innerWidth, innerHeight]);
-
-var body = d3.select("body");
-
-var svg = d3.select("svg")
-    .attr("width", innerWidth)
-    .attr("height", innerHeight);
-
-function update() {
-	force
-      .nodes(graph.nodes)
-      .links(graph.links)
-      .start();
-	
-	var allLinks = svg.selectAll(".link").data(graph.links);
-	
-	var link = allLinks
-    	.enter()
-			.append("line")
-      .attr("class", "link")
-			.style("stroke-width", 1);
-	
-	allLinks.	exit().remove();
-	
-	var allNodes = svg.selectAll(".node").data(graph.nodes);
-	
-	function click(d) {
-		var self = d3.select(this);
-		var spinner = self.append("image")
-			.attr("xlink:href", "images/spinner2.svg")
-			.classed("spinner", true)
-			.attr("height", 35)
-			.attr("width", 35)
-			.attr("x", -17.5)
-			.attr("y", -17.5);
-		setTimeout(function() {
-			spinner.remove();
-			var t1 = self.append("text")
-				.attr("class", "mesh-blog-link")
-				.text("My Little Pony News")
-				.attr("y", 50);
-			var t2 = self.append("text")
-				.attr("class", "mesh-blog-link")
-				.text("Star Trek Wiki Updates Feed")
-				.attr("y", 75);
-			var t3 = self.append("text")
-				.attr("class", "mesh-blog-link")
-				.text("TMZ Latest Updates")
-				.attr("y", 100);
-			self.on("click", function() {
-				t1.remove();
-				t2.remove();
-				t3.remove();
-				self.on("click", click);
-			})
-		}, 2000);
-	}
-	
-	var node = allNodes
-    	.enter()
-			.append("g")
-      .attr("class", "node")
-			.on("click", click);
-
-	node.append("circle")
-      .attr("r", 15)
-	
-	allNodes.exit().remove();
-
-  node.append("text")
-      .text(function(d) { return d.name; })
-			.attr("y", 25);
-	
-	force.on("tick", function() {
-    svg.selectAll(".link")
-				.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-
-    svg.selectAll(".node")
-				.attr("transform", function(d) { 
-					return "translate(" + d.x + "," + d.y + ")"; 
-				})
-				.moveToFront();
-		
-		center.moveToFront();
-  });
-}
-
-function connect(person) {
-	var newNode = {
-		name: person[0]
-	}
-	graph.nodes.push(newNode);
-	for (var i in person[1]) {
-		graph.links.push({source: newNode, target: graph.nodes[person[1][i]]});
-	}
-	update();
-}
+var rssListElement, center;
 
 function simulateConnections() {
 	var people = [
-		["Adam", [0]],
-		["Beth", [0]],
-		["Chris", [1, 2]],
-		["David", [2]],
-		["Erin", [1]],
-		["Frank", [0]],
-		["Greg", [6]],
-		["Heather", [4]]
+		{ name:"Adam", id: 1, links: [0]},
+		{ name:"Beth", id: 2, links: [0]},
+		{ name:"Chris", id: 3, links: [1, 2]},
+		{ name:"David", id: 4, links: [2]},
+		{ name:"Erin", id: 5, links: [1]},
+		{ name:"Frank", id: 6, links: [0]},
+		{ name:"Greg", id: 7, links: [6]},
+		{ name:"Heather", id: 8, links: [4]}
 	]
 	
 	var index = 0;
 	
 	function connectHelper() {
 		if (index < people.length) {
-			connect(people[index++]);
+			graph.connect(people[index]);
+			
+			people[index].links.forEach(function (l) {
+				if (l == 0) {
+					graph.linkToMe(people[index].id);
+				} else {
+					graph.addLink(people[index].id, people[l - 1].id);
+				}
+			});
+			index++;
 			setTimeout(connectHelper, Math.random() * 2000 + 1000);
 		}
 	}
@@ -142,28 +37,96 @@ function simulateConnections() {
 	connectHelper();
 }
 
-d3.xml("data/fcc.xml", function(error, data) {
+function populateArticleList() {
+		var $this = $(this);
+		var url = $this.attr("href");
+		var $rssList = $('#rss-modal-list');
+		rss.getFeed(url).then(function(articles) {
+			articles.forEach(function(article) {
+				var li = $('<li class="table-view-cell media"></li>');
+				var a = $('<a class="rss-item" href="' + article.guid + '"></a>');
+				var mediaBody = $('<div class="media-body"></div>');
+				mediaBody.html("<h4>" + article.title + "</h4>" + 
+											 "<p>" + article.description + '</p>');
+				li.append(a);
+				a.append('<img class="media-object pull-left" src="' + 
+						article.image + '"></img>')
+			 		.append(mediaBody);
+					$rssList.append(li);
+			});
+			$('#list-modal').addClass("active");
+		});
+	}
+
+function populateRSSList() {
+	rssListElement.html("");
+	rss.getSubscribedList().then(function(rssList) {
+		for (var url in rssList) {
+			var li = $('<li class="table-view-cell media"></li>');
+			var a = $('<a class="rss-item" href="' + url + '"></a>');
+			var mediaBody = $('<div class="media-body"></div>');
+			mediaBody.html(rssList[url].channel.title + 
+						"<p>" + rssList[url].channel.description + "</p>");
+			li.append(a);
+			a.append('<img class="media-object pull-left" src="' + 
+							 rssList[url].image + '"></img>')
+			 .append(mediaBody);
+			a.click(populateArticleList);
+			rssListElement.append(li);
+		}
+	});
+}
+
+$(document).ready(function() {
+	rssListElement = $('#rss-list');
+	center = $(".center");
 	
-});
+	rss.sync()
+		.then(populateRSSList);
 
-var center = d3.select(".center");
-
-d3.selectAll(".item[href^='#']")
-	.on("click", function(e) {
-		d3.select("#myModalExample").classed("active", true);
+	$("#add").click(function() {
+		$('#subscribe-modal').addClass("active");
 	});
 
-d3.selectAll(".icon-close[href^='#']")
-	.on("click", function(e) {
-		d3.select("#myModalExample").classed("active", false);
+	$('#subscribe-modal .icon-close').click(function() {
+		$('#subscribe-modal').removeClass("active");
+	});
+	
+	$('#list-modal .icon-close').click(function() {
+		$('#list-modal').removeClass("active");
+	});
+	
+	$('#reader-modal .icon-close').click(function() {
+		$('#reader-modal').removeClass("active");
 	});
 
-center.on("click", function	() {
-	center.on("click", undefined);
-	body.attr("meshed", true);
+	function subscribe() {
+		var $this = $(this);
+		$this.addClass("btn-outlined");
+		$this.text("Loading, please wait...");
+		$this.off("click");
+		rss.subscribe($('#subscribe-url').val())
+			.then(rss.sync)
+			.then(populateRSSList)
+			.then(function() {
+				$('#subscribe').click(subscribe);
+				$('#subscribe-modal').removeClass("active");
+				$this.removeClass("btn-outlined");
+				$this.text("Subscribe");			
+			});
+	}
+	
+	$('#subscribe').click(subscribe);
+
+	center.on("click", function	() {
+		center.on("click", undefined);
+		$(document.body).attr("meshed", true);
 		setTimeout(function () {
-			update();
+			graph.show();
 			simulateConnections();
-			d3.select("#connectedPosts").style("display", "none");
+			$("#connectedPosts").css("display", "none");
 		}, 1000);
+	});
+	
+	$(".rss-item").click()
 });

@@ -35,10 +35,6 @@
 	transition: all 1s ease-in-out;
 	transform: translate(50vw, 50vh);
 }
- 
-.content {
-	margin-top: 80px;
-}
 
 .link {
   stroke: #999;
@@ -50,7 +46,11 @@
 	background-color: transparent;
 }
 
-#home[meshed] #connectedPosts {
+#home[meshed] header {
+	opacity: 0;
+}
+
+#home[meshed] #rss-content {
 	opacity: 0;
 }
 
