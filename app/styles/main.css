@@ -1,0 +1,74 @@
+#home {
+	background-color: #eee;
+	transition: background-color 1s ease-in-out;
+}
+
+#home[meshed] {
+	background-color: #221C24;
+}
+
+.node circle {
+	fill: #B430FF;
+}
+
+.spinner {
+	-webkit-animation: spin 1s 0s linear infinite;
+}
+
+.center {
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+	background-color: #FFC93F;
+	background-image: url(images/connection.svg);
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	position: absolute;
+	left: -35px;
+	top: -35px;
+	transform-origin: 50% 50%;
+	transform: translate(93vw, 47.5px);
+}
+
+#home[meshed] .center {
+	background-image: none;
+	transition: all 1s ease-in-out;
+	transform: translate(50vw, 50vh);
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+#connectedPosts {
+	transition: opacity 1s ease-in-out;
+	background-color: transparent;
+}
+
+#home[meshed] header {
+	opacity: 0;
+}
+
+#home[meshed] #rss-content {
+	opacity: 0;
+}
+
+svg {
+	position:absolute;
+	left: 0;
+	top: 0;
+}
+
+.node text {
+  font: 10px "Avenir Next";
+	fill: white;
+	font-weight: 400;
+  pointer-events: none;
+  text-anchor: middle;
+}
+
+.mesh-blog-link {
+	font-weight: inherit;
+	fill: grey;
+}

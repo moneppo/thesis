@@ -3,8 +3,47 @@
 <head>
 	<title></title>
 	<link rel="stylesheet" href="output.css">
+	<script src="ratchet.js"></script>
 </head>
-<body>
+<body id="home">
+	<svg></svg>
+	<header class="bar bar-nav">
+		<a id="add" class="icon icon-plus pull-left"></a>
+	</header>
+	<div class="content" id="rss-content">
+		<ul id="rss-list" class="table-view content-padded">
+		</ul>
+	</div>
+	<div id="subscribe-modal" class="modal">
+		<header class="bar bar-nav">
+			<a class="icon icon-close pull-right"></a>
+			<h1 class="title">Subscribe to a Feed</h1>
+		</header>
+		<div class="content">
+			<input id="subscribe-url" type="text" placeholder="RSS URL">
+			<button id="subscribe" class="btn btn-positive btn-block">Subscribe</button>
+		</div>
+	</div>
+	<div id="list-modal" class="modal">
+		<header class="bar bar-nav">
+			<a class="icon icon-close pull-right"></a>
+			<h1 class="title"></h1>
+		</header>
+			<div class="content" id="list-content">
+				<ul id="rss-modal-list" class="table-view content-padded">
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div id="reader-modal" class="modal">
+		<header class="bar bar-nav">
+			<a class="icon icon-close pull-right"></a>
+			<h1 class="title"></h1>
+		</header>
+		<div class="content">
+		</div>
+	</div>
+	<div class="center"></div>
 </body>
 	<script type="text/javascript" src="js/bundle.js"></script>
 </html>
